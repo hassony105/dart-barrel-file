@@ -8,7 +8,7 @@ A selection panel will open and present the opportunity to exclude any files fro
 
 Easily add new Dart Files to an existing barrel file by right clicking in the editor or on the file in the project tree.
 
-Visit the project Github page for more information:  https://github.com/pastordougdev/dart-barrel-file
+Visit the project Github page for more information:  https://github.com/hassony105/dart-barrel-file
 
 <!-- Plugin description end -->
 ## Create New Barrel File in directory:
