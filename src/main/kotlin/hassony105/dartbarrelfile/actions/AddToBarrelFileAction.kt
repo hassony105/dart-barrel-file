@@ -1,4 +1,4 @@
-package pastordougdev.dartbarrelfile.actions
+package hassony105.dartbarrelfile.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -6,10 +6,14 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
-import pastordougdev.dartbarrelfile.dialog.AlreadyInBarrelFileDialog
-import pastordougdev.dartbarrelfile.dialog.NoBarrelFileFoundDialog
-import pastordougdev.dartbarrelfile.dialog.SelectBarrelFileDialog
-import pastordougdev.dartbarrelfile.misc.*
+import hassony105.dartbarrelfile.dialog.AlreadyInBarrelFileDialog
+import hassony105.dartbarrelfile.dialog.NoBarrelFileFoundDialog
+import hassony105.dartbarrelfile.dialog.SelectBarrelFileDialog
+import hassony105.dartbarrelfile.misc.addDartFileToBarrelFile
+import hassony105.dartbarrelfile.misc.findExistingBarrelFiles
+import hassony105.dartbarrelfile.misc.isDartFile
+import hassony105.dartbarrelfile.misc.isInBarrelFile
+import hassony105.dartbarrelfile.misc.isPartFile
 
 class AddToBarrelFileAction : AnAction() {
 
@@ -19,11 +23,8 @@ class AddToBarrelFileAction : AnAction() {
 
         event.presentation.isEnabledAndVisible = false
 
-        val psiFile = event.getData(CommonDataKeys.PSI_FILE);
-        if(psiFile == null) {
-            return;
-        }
-        val n = psiFile.name
+        val psiFile = event.getData(CommonDataKeys.PSI_FILE) ?: return
+        psiFile.name
         if(!isDartFile(psiFile)) {
             return
         }
@@ -35,16 +36,16 @@ class AddToBarrelFileAction : AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project ?: return;
-        this.dataContext = e.dataContext;
-        val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return;
+        val project = e.project ?: return
+        this.dataContext = e.dataContext
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return
 
 
         val barrelFiles = mutableListOf<PsiFile>()
 
 
-        val dartFileName = psiFile.name;
-        val dir = psiFile.containingDirectory;
+        psiFile.name
+        val dir = psiFile.containingDirectory
 
         findExistingBarrelFiles(project, dir, barrelFiles, psiFile)
 
@@ -58,7 +59,7 @@ class AddToBarrelFileAction : AnAction() {
         val inExistingBarrelFiles = isInBarrelFile(project, psiFile, barrelFiles)
 
         //If this file is already in other barrel files, show a dialog
-        var doContinue = true;
+        var doContinue = true
         if(inExistingBarrelFiles.isNotEmpty()) {
             val existingDialog = AlreadyInBarrelFileDialog(psiFile, inExistingBarrelFiles)
             existingDialog.show()
@@ -74,7 +75,7 @@ class AddToBarrelFileAction : AnAction() {
         //did the user hit cancel on the file picker dialog?
         if(!dialog.isOK) return
 
-        var selectedBarrelFiles = dialog.getSelectedFiles()
+        val selectedBarrelFiles = dialog.getSelectedFiles()
         if(selectedBarrelFiles.isEmpty()) return
 
         val selectedBarrelFile = selectedBarrelFiles[0]
@@ -84,7 +85,7 @@ class AddToBarrelFileAction : AnAction() {
             return
         }
 
-        var barrelFileDocument = PsiDocumentManager.getInstance(project).getDocument(selectedBarrelFile)
+        PsiDocumentManager.getInstance(project).getDocument(selectedBarrelFile)
 
         addDartFileToBarrelFile(project, psiFile, selectedBarrelFile)
 

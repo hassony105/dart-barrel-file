@@ -1,4 +1,4 @@
-package pastordougdev.dartbarrelfile.dialog
+package hassony105.dartbarrelfile.dialog
 
 import com.intellij.openapi.ui.DialogWrapper
 import java.awt.BorderLayout
@@ -15,7 +15,7 @@ class NoBarrelFileFoundDialog : DialogWrapper(true) {
         title = "No Barrel Files"
     }
 
-    override fun createCenterPanel(): JComponent? {
+    override fun createCenterPanel(): JComponent {
         val panel = JPanel(BorderLayout())
         panel.preferredSize = Dimension(200, 50)
         val label = JLabel("No Barrel File(s) found in this directory\nor in tree above")

@@ -1,4 +1,4 @@
-package pastordougdev.dartbarrelfile.dialog
+package hassony105.dartbarrelfile.dialog
 
 import com.intellij.ide.util.DefaultPsiElementCellRenderer
 import com.intellij.openapi.ui.DialogWrapper
@@ -15,27 +15,24 @@ import javax.swing.JTextField
 
 class BarrelDialog (
     project: Project,
-    private val dirName: String,
+    dirName: String,
     private val availableFileNames: List<String>
 ) : DialogWrapper(project) {
 
-    private val filesCollection: CollectionListModel<String>
-    private val filesList: JBList<String>
+    private val filesCollection: CollectionListModel<String> = CollectionListModel(
+        availableFileNames.map { it }
+    )
+    private val filesList: JBList<String> = JBList(filesCollection).apply{
+        cellRenderer = DefaultPsiElementCellRenderer()
+        selectedIndices = availableFileNames
+            .withIndex()
+            .map { it.index }
+            .toIntArray()
+    }
     private val filesComponent: LabeledComponent<JPanel>
     private val barrelLabel: JLabel
     private val barrelFileName: JTextField
     init {
-        filesCollection = CollectionListModel(
-            availableFileNames.map { it }
-        )
-
-        filesList = JBList(filesCollection).apply{
-            cellRenderer = DefaultPsiElementCellRenderer()
-            selectedIndices = availableFileNames
-                .withIndex()
-                .map { it.index }
-                .toIntArray()
-        }
 
         val decorator = ToolbarDecorator.createDecorator(filesList)
             .disableAddAction()
@@ -52,7 +49,7 @@ class BarrelDialog (
         barrelFileName.text = if(dirName != "lib") dirName else "imports"
         init()
     }
-    override fun createCenterPanel(): JComponent? {
+    override fun createCenterPanel(): JComponent {
         val panel = JPanel(BorderLayout())
         panel.add(barrelFileNamePanel(), BorderLayout.NORTH)
         panel.add(filesComponent, BorderLayout.CENTER)
@@ -60,16 +57,16 @@ class BarrelDialog (
         //return filesComponent
     }
 
-    override fun getPreferredFocusedComponent(): JComponent? {
+    override fun getPreferredFocusedComponent(): JComponent {
         return filesList
     }
 
-    private fun barrelFileNamePanel(): JComponent? {
+    private fun barrelFileNamePanel(): JComponent {
         //val panel = JPanel(GridLayout(0, 2))
         val panel = JPanel(BorderLayout())
-        panel.add(barrelLabel, BorderLayout.LINE_START);
-        panel.add(barrelFileName, BorderLayout.CENTER);
-        return panel;
+        panel.add(barrelLabel, BorderLayout.LINE_START)
+        panel.add(barrelFileName, BorderLayout.CENTER)
+        return panel
     }
 
     private fun extractSelectedIndices(): Set<Int> {
@@ -77,11 +74,11 @@ class BarrelDialog (
     }
 
     fun getSelectedFiles(): List<String> {
-        val selectedIndices = extractSelectedIndices();
+        val selectedIndices = extractSelectedIndices()
         return this.availableFileNames.filterIndexed { index, _ -> index in selectedIndices }
     }
 
     fun getBarrelFileName(): String {
-        return "${this.barrelFileName.text}.dart";
+        return "${this.barrelFileName.text}.dart"
     }
 }

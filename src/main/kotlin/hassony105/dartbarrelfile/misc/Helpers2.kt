@@ -1,13 +1,15 @@
-package pastordougdev.dartbarrelfile.misc
+package hassony105.dartbarrelfile.misc
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.*
+import com.intellij.psi.PsiDirectory
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiFile
 
 fun filesAlreadyInBarrelFiles(project: Project, dir: PsiDirectory): MutableList<String> {
     val exportedFileNames = mutableListOf<String>()
-    val dartRegex = Regex("['|\\/]([\\w_]*\\.dart)")
-    val libDir = getLibDirectory(project, dir) ?: return mutableListOf<String>()
+    val dartRegex = Regex("['|/]([\\w_]*\\.dart)")
+    val libDir = getLibDirectory(dir) ?: return mutableListOf()
     val barrelFiles = getAllBarrelFiles(project, libDir)
     for(bf in barrelFiles) {
         val document = PsiDocumentManager.getInstance(project).getDocument(bf)
@@ -29,7 +31,7 @@ fun filesAlreadyInBarrelFiles(project: Project, dir: PsiDirectory): MutableList<
 
 }
 
-fun getLibDirectory(project: Project, dir: PsiDirectory) : PsiDirectory? {
+fun getLibDirectory(dir: PsiDirectory) : PsiDirectory? {
     println("Looking for lib director")
     if(dir.name == "lib") return dir
     var found = false
@@ -70,8 +72,8 @@ fun getBarrelFileInDirectory(project: Project, dir: PsiDirectory, barrelFiles: M
 
 fun getExportedDartFileNames(project: Project, barrelFile: PsiFile): MutableList<String> {
     val exportedFileNames = mutableListOf<String>()
-    val dartFullPathRegex = Regex("export\\s(\\'\\w*.dart\\')")
-    val dartRegex = Regex("['|\\/]([\\w_]*\\.dart)")
+    Regex("export\\s('\\w*.dart')")
+    val dartRegex = Regex("['|/]([\\w_]*\\.dart)")
     val document = PsiDocumentManager.getInstance(project).getDocument(barrelFile)
     var lines = document?.lineCount ?: 0
     if(lines > 0) {

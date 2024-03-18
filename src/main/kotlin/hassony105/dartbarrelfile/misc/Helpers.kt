@@ -1,21 +1,23 @@
-package pastordougdev.dartbarrelfile.misc
+package hassony105.dartbarrelfile.misc
 
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.openapi.actionSystem.LangDataKeys
-import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.*
-import pastordougdev.dartbarrelfile.dialog.BarrelDialog
-import com.intellij.openapi.command.WriteCommandAction
-import pastordougdev.dartbarrelfile.misc.BarrelFile
+import com.intellij.psi.PsiDirectory
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileFactory
+import com.intellij.psi.PsiManager
+import hassony105.dartbarrelfile.dialog.BarrelDialog
 
 fun getDirName(
     dataContext: DataContext
 ): String {
-    val view = LangDataKeys.IDE_VIEW.getData(dataContext);
-    val dir = view?.orChooseDirectory;
+    val view = LangDataKeys.IDE_VIEW.getData(dataContext)
+    val dir = view?.orChooseDirectory
     return dir?.name ?: ""
 }
 
@@ -23,11 +25,11 @@ fun getAvailableFileNames(
     project: Project,
     dataContext: DataContext
 ): List<String> {
-    val view = LangDataKeys.IDE_VIEW.getData(dataContext);
-    val dir = view?.orChooseDirectory;
-    val files = dir?.files;
+    val view = LangDataKeys.IDE_VIEW.getData(dataContext)
+    val dir = view?.orChooseDirectory
+    val files = dir?.files
     val dirName = dir?.name ?: ""
-    val availableFiles = mutableListOf<String>();
+    val availableFiles = mutableListOf<String>()
     if(files != null) {
         for(file in files) {
             if(file.name != "$dirName.dart" && !isPartFile(project, file)) {
@@ -35,7 +37,7 @@ fun getAvailableFileNames(
             }
         }
     }
-    return availableFiles;
+    return availableFiles
 }
 
 fun getAvailableFileNames(
@@ -43,11 +45,11 @@ fun getAvailableFileNames(
     dataContext: DataContext,
     existingFileName: String
 ): List<String> {
-    val view = LangDataKeys.IDE_VIEW.getData(dataContext);
-    val dir = view?.orChooseDirectory;
-    val files = dir?.files;
-    val dirName = dir?.name ?: ""
-    val availableFiles = mutableListOf<String>();
+    val view = LangDataKeys.IDE_VIEW.getData(dataContext)
+    val dir = view?.orChooseDirectory
+    val files = dir?.files
+    dir?.name
+    val availableFiles = mutableListOf<String>()
     if(files != null) {
         for(file in files) {
             if(file.name != existingFileName && !isPartFile(project, file)) {
@@ -55,16 +57,16 @@ fun getAvailableFileNames(
             }
         }
     }
-    return availableFiles;
+    return availableFiles
 }
 
 fun getAvailableFilesTree(
     project: Project,
     dataContext: DataContext
 ): MutableList<String> {
-    val availableFiles = mutableListOf<String>();
-    val view = LangDataKeys.IDE_VIEW.getData(dataContext);
-    val dir = view?.orChooseDirectory ?: return availableFiles;
+    val availableFiles = mutableListOf<String>()
+    val view = LangDataKeys.IDE_VIEW.getData(dataContext)
+    val dir = view?.orChooseDirectory ?: return availableFiles
     getAvailableFilesWithSubdirectories(project, dir, availableFiles, "", "$dir.name.dart")
     return availableFiles
 }
@@ -74,29 +76,26 @@ fun getAvailableFilesTree(
     dataContext: DataContext,
     existingFileName: String
 ): MutableList<String> {
-    val availableFiles = mutableListOf<String>();
-    val view = LangDataKeys.IDE_VIEW.getData(dataContext);
-    val dir = view?.orChooseDirectory ?: return availableFiles;
+    val availableFiles = mutableListOf<String>()
+    val view = LangDataKeys.IDE_VIEW.getData(dataContext)
+    val dir = view?.orChooseDirectory ?: return availableFiles
     getAvailableFilesWithSubdirectories(project, dir, availableFiles, "", existingFileName)
     return availableFiles
 }
 
 fun getAvailableFilesWithSubdirectories(project: Project, dir: PsiDirectory, availableFiles: MutableList<String>, prefix: String, excludedFileName: String) {
-    val files = dir.files;
-    val dirName = dir.name;
+    val files = dir.files
+    val dirName = dir.name
     println("Get Available Files With Sub $dirName")
-    if(files != null) {
-        for(file in files) {
-            //if(file.name != "$prefix$dirName.dart" && file.name.endsWith(".dart") && !isPartFile(project, file)) {
-            if(file.name != excludedFileName && isDartFile(file) && !isPartFile(project, file)) {
-                availableFiles.add("$prefix${file.name}")
-            }
+    for(file in files) {
+        //if(file.name != "$prefix$dirName.dart" && file.name.endsWith(".dart") && !isPartFile(project, file)) {
+        if(file.name != excludedFileName && isDartFile(file) && !isPartFile(project, file)) {
+            availableFiles.add("$prefix${file.name}")
         }
     }
     val subDirs = dir.subdirectories
     for(subDir in subDirs) {
-        var p = ""
-        p = if(prefix.isEmpty()) {
+        val p: String = if(prefix.isEmpty()) {
             "./${subDir.name}/"
         } else {
             "$prefix${subDir.name}/"
@@ -116,7 +115,7 @@ fun buildBarrelFileWithDialog(
 
     if (!dialog.isOK) return null
 
-    return BarrelFile(dirName, dialog.getBarrelFileName(), dialog.getSelectedFiles());
+    return BarrelFile(dirName, dialog.getBarrelFileName(), dialog.getSelectedFiles())
 }
 
 fun createBarrelFile(project: Project, dir: PsiDirectory, barrelFile: BarrelFile) {
@@ -130,7 +129,7 @@ fun createBarrelFile(project: Project, dir: PsiDirectory, barrelFile: BarrelFile
         return
     }
     val newFile = PsiFileFactory.getInstance(project)
-        .createFileFromText(barrelFile.barrelFileName, fileType, barrelContents);
+        .createFileFromText(barrelFile.barrelFileName, fileType, barrelContents)
     dir.add(newFile)
 }
 
@@ -152,7 +151,7 @@ fun isBarrelFile(project: Project, file: PsiFile) : Boolean {
 }
 
 fun findExistingBarrelFiles(project: Project, dir: PsiDirectory, barrelFiles: MutableList<PsiFile>, targetFile: PsiFile) {
-    val files = dir.files;
+    val files = dir.files
     for(file in files) {
         if(isDartFile(file) && isBarrelFile(project, file) && !file.isEquivalentTo(targetFile)) {
             barrelFiles.add(file)
@@ -173,7 +172,7 @@ fun findExistingBarrelFiles(project: Project, dir: PsiDirectory, barrelFiles: Mu
 fun isInBarrelFile(project: Project, dartFile: PsiFile, barrelFiles: MutableList<PsiFile>) : MutableList<PsiFile> {
     val inBarrelFiles = mutableListOf<PsiFile>()
     for(file in barrelFiles) {
-        val fileContents = PsiDocumentManager.getInstance(project).getDocument(file);
+        val fileContents = PsiDocumentManager.getInstance(project).getDocument(file)
         val fileText = fileContents?.text
         if(fileText != null) {
             if(fileText.contains(dartFile.name)) {
@@ -211,7 +210,7 @@ fun addDartFileToBarrelFile(project: Project, fileToAdd: PsiFile, barrelFile: Ps
 
     }
 
-    val barrelFileDoc = PsiDocumentManager.getInstance(project).getDocument(barrelFile);
+    val barrelFileDoc = PsiDocumentManager.getInstance(project).getDocument(barrelFile)
     if(barrelFileDoc != null) {
         val c = barrelFileDoc.text
         val updatedBarrelFileContents = c + exportStatement.toString()
@@ -227,7 +226,7 @@ fun addDartFileToBarrelFile(project: Project, fileToAdd: PsiFile, barrelFile: Ps
 fun sortBarrelFile(barrelFileContents: String) : String {
     val sortedBarrelFile = StringBuilder()
     val files = mutableListOf<Pair<String, String>>()
-    val lines = barrelFileContents.split('\n');
+    val lines = barrelFileContents.split('\n')
     for (line in lines) {
         if(line.length > 1 && line.substring(0, 2) == "//") {
             sortedBarrelFile.append(line + "\n")
@@ -249,13 +248,13 @@ fun sortBarrelFile(barrelFileContents: String) : String {
         }
     }
     //files.sortWith(Comparator{a, b -> a.first.compareTo(b.first)})
-    //0.5.3 - instead of just sorting on the dart file name, sort on the entire
+    //1.0.0 - instead of just sorting on the dart file name, sort on the entire
     //line.  This satisfies the directives_ordering dart linting rule.
-    files.sortWith(Comparator{a, b -> a.second.compareTo(b.second)})
+    files.sortWith { a, b -> a.second.compareTo(b.second) }
     for (file in files) {
         sortedBarrelFile.append(file.second + "\n")
     }
-    return sortedBarrelFile.toString();
+    return sortedBarrelFile.toString()
 }
 
 fun buildExportPath(project: Project, currentDir: PsiDirectory, targetDir: PsiDirectory, exportPath: StringBuilder) {

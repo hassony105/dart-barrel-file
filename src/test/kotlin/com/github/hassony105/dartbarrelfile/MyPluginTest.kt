@@ -1,4 +1,4 @@
-package com.github.pastordougdev.dartbarrelfile
+package com.github.hassony105.dartbarrelfile
 
 import com.intellij.ide.highlighter.XmlFileType
 import com.intellij.psi.xml.XmlFile

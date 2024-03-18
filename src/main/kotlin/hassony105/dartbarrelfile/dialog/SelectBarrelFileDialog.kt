@@ -1,4 +1,4 @@
-package pastordougdev.dartbarrelfile.dialog
+package hassony105.dartbarrelfile.dialog
 
 import com.intellij.ide.util.DefaultPsiElementCellRenderer
 import com.intellij.openapi.project.Project
@@ -11,31 +11,26 @@ import com.intellij.ui.components.JBList
 import java.awt.BorderLayout
 import javax.swing.JComponent
 import javax.swing.JPanel
-import javax.swing.event.ListSelectionEvent
-import javax.swing.event.ListSelectionListener
 
 class SelectBarrelFileDialog (project: Project, private val barrelFiles: List<PsiFile>) : DialogWrapper(project) {
 
-    private val barrelFilesCollection: CollectionListModel<PsiFile>
-    private val barrelFilesNamesList: JBList<PsiFile>
+    private val barrelFilesCollection: CollectionListModel<PsiFile> = CollectionListModel(
+        barrelFiles.map { it }
+    )
+    private val barrelFilesNamesList: JBList<PsiFile> = JBList(barrelFilesCollection).apply{
+        cellRenderer = DefaultPsiElementCellRenderer()
+        setSelectionMode(0)
+    }
     private val filesComponent: LabeledComponent<JPanel>
 
     init {
-        barrelFilesCollection = CollectionListModel(
-            barrelFiles.map { it }
-        )
 
-
-        barrelFilesNamesList = JBList(barrelFilesCollection).apply{
-            cellRenderer = DefaultPsiElementCellRenderer()
-            setSelectionMode(0)
-        }
 
         val decorator = ToolbarDecorator.createDecorator(barrelFilesNamesList)
             .disableAddAction()
         val panel = decorator.createPanel()
 
-        filesComponent = LabeledComponent.create(panel, "Choose A Barrel File")
+        filesComponent = LabeledComponent.create(panel, "Choose " +"A "+"Barrel "+"File")
 
         init()
     }

@@ -1,4 +1,4 @@
-package pastordougdev.dartbarrelfile.actions
+package hassony105.dartbarrelfile.actions
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -9,8 +9,13 @@ import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.CommandProcessor
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.openapi.util.TextRange
-import pastordougdev.dartbarrelfile.misc.*
-import pastordougdev.dartbarrelfile.dialog.NotBarrelFileDialogDialog
+import hassony105.dartbarrelfile.dialog.NotBarrelFileDialogDialog
+import hassony105.dartbarrelfile.misc.BarrelFile
+import hassony105.dartbarrelfile.misc.buildBarrelFileWithDialog
+import hassony105.dartbarrelfile.misc.createBarrelFile
+import hassony105.dartbarrelfile.misc.getAvailableFileNames
+import hassony105.dartbarrelfile.misc.isBarrelFile
+import hassony105.dartbarrelfile.misc.isDartFile
 
 class RefreshBarrelFileAction : AnAction() {
 
@@ -31,14 +36,14 @@ class RefreshBarrelFileAction : AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        val project = e.project;
-        this.dataContext = e.dataContext;
-        val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return;
+        val project = e.project
+        this.dataContext = e.dataContext
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE) ?: return
         if (project == null) return
 
         val barrelFileName = psiFile.name
         val fileContents = PsiDocumentManager.getInstance(project).getDocument(psiFile)
-        val header = fileContents?.getText(TextRange(0, BarrelFile.BARREL_FILE_HEADER.length));
+        val header = fileContents?.getText(TextRange(0, BarrelFile.BARREL_FILE_HEADER.length))
         if (header != BarrelFile.BARREL_FILE_HEADER) {
             val notDialog = NotBarrelFileDialogDialog()
             notDialog.show()
@@ -50,12 +55,11 @@ class RefreshBarrelFileAction : AnAction() {
 
         //val barrelFile = buildBarrelFileWithDialog(project, dirName, availableFiles)
         val targetFileName = barrelFileName.replace(".dart", "")
-        val barrelFile = buildBarrelFileWithDialog(project, targetFileName, availableFiles)
+        val barrelFile =
+            buildBarrelFileWithDialog(project, targetFileName, availableFiles) ?: return
 
-        if (barrelFile == null) return;
-
-        val view = LangDataKeys.IDE_VIEW.getData(this.dataContext);
-        val dir = view?.orChooseDirectory;
+        val view = LangDataKeys.IDE_VIEW.getData(this.dataContext)
+        val dir = view?.orChooseDirectory
         ApplicationManager.getApplication().runWriteAction {
             CommandProcessor.getInstance().executeCommand(
                 project,

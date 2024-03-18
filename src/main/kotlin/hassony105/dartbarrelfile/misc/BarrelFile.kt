@@ -1,4 +1,4 @@
-package pastordougdev.dartbarrelfile.misc
+package hassony105.dartbarrelfile.misc
 
 data class BarrelFile (
     val dirName: String,
@@ -7,16 +7,16 @@ data class BarrelFile (
 ) {
 
     fun generateFileContents() : String {
-        var contents = "//GENERATED BARREL FILE \n";
+        var contents = "//GENERATED BARREL FILE \n"
         for(file in selectedFiles) {
             if(file != barrelFileName) {
                 contents += "export \'$file\'; \n"
             }
         }
-        return contents;
+        return contents
     }
 
     companion object {
-        const val BARREL_FILE_HEADER = "//GENERATED BARREL FILE";
+        const val BARREL_FILE_HEADER = "//GENERATED BARREL FILE"
     }
 }
