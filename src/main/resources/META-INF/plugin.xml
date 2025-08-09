@@ -122,14 +122,16 @@
         <action class="hassony105.dartbarrelfile.actions.AddToBarrelFileAction"
             description="Add to barrel file" icon="/icons/barrel2-add.png"
             id="hassony105.dartbarrelfile.addtobarrelfile" text="Add To Barrel File">
-            <add-to-group anchor="last" group-id="EditorLangPopupMenu" />
+            <!-- Show in editor popup; rely on update() to filter visibility to Dart files -->
+            <add-to-group anchor="last" group-id="EditorPopupMenu" />
+            <keyboard-shortcut first-keystroke="ctrl alt shift B" keymap="$default"/>
         </action>
         <action class="hassony105.dartbarrelfile.actions.AddToBarrelFileAction"
-            description="Refresh dart barrel file" icon="/icons/barrel2-add.png"
+            description="Add to barrel file" icon="/icons/barrel2-add.png"
             id="hassony105.dartbarrelfile.actions.AddToBarrelFileActionProjectView"
             text="Add To Barrel File">
-            <add-to-group anchor="after" group-id="ProjectViewPopupMenu"
-                relative-to-action="ProjectViewPopupMenuRefactoringGroup" />
+            <!-- Project View file popup -->
+            <add-to-group anchor="last" group-id="ProjectViewPopupMenu" />
         </action>
     </actions>
 </idea-plugin>

@@ -124,8 +124,8 @@ fun createBarrelFile(project: Project, dir: PsiDirectory, barrelFile: BarrelFile
     val fileType = FileTypeManager.getInstance().getFileTypeByFileName(barrelFile.barrelFileName)
     if(existingFile != null) {
         val document = PsiDocumentManager.getInstance(project).getDocument(existingFile)
-        val docLength = document?.textLength ?: 1
-        document?.replaceString(0, docLength - 1, barrelContents)
+        val docLength = document?.textLength ?: 0
+        document?.replaceString(0, docLength, barrelContents)
         return
     }
     val newFile = PsiFileFactory.getInstance(project)
@@ -217,7 +217,7 @@ fun addDartFileToBarrelFile(project: Project, fileToAdd: PsiFile, barrelFile: Ps
         val sortedBarrelFile = sortBarrelFile(updatedBarrelFileContents)
         val fileLen = barrelFileDoc.textLength
         WriteCommandAction.runWriteCommandAction(project) {
-            barrelFileDoc.replaceString(0, fileLen - 1, sortedBarrelFile)
+            barrelFileDoc.replaceString(0, fileLen, sortedBarrelFile)
         }
     }
 

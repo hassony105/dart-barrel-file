@@ -1,11 +1,12 @@
 package hassony105.dartbarrelfile.actions
 
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.DataContext
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
+import com.intellij.openapi.project.DumbAwareAction
 import hassony105.dartbarrelfile.dialog.AlreadyInBarrelFileDialog
 import hassony105.dartbarrelfile.dialog.NoBarrelFileFoundDialog
 import hassony105.dartbarrelfile.dialog.SelectBarrelFileDialog
@@ -15,7 +16,7 @@ import hassony105.dartbarrelfile.misc.isDartFile
 import hassony105.dartbarrelfile.misc.isInBarrelFile
 import hassony105.dartbarrelfile.misc.isPartFile
 
-class AddToBarrelFileAction : AnAction() {
+class AddToBarrelFileAction : DumbAwareAction() {
 
     private lateinit var dataContext: DataContext
 
@@ -33,6 +34,10 @@ class AddToBarrelFileAction : AnAction() {
         if(isPartFile(project, psiFile)) return
 
         event.presentation.isEnabledAndVisible = true
+    }
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
     }
 
     override fun actionPerformed(e: AnActionEvent) {
